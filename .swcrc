@@ -1,0 +1,21 @@
+{
+    "jsc": {
+        "parser": {
+            "syntax": "typescript",
+            "tsx": true,
+            "decorators": true,
+            "dynamicImport": true
+        },
+        "target": "esnext",
+        "baseUrl": "./"
+    },
+    "module": {
+        "type": "umd"
+    },
+    "exclude": [
+        "src/public",
+        "node_modules",
+        ".*\\.spec.ts$",
+        ".*\\.test.ts$"
+    ]
+}
