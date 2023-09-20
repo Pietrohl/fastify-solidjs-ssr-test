@@ -18,6 +18,7 @@ import {
 import path from "path";
 import fastifyStatic from "@fastify/static";
 import { renderedHTML } from "../view/serverRenderer";
+import fs from "fs";
 
 async function attachRoutes(
   app: FastifyInstance,
@@ -43,32 +44,19 @@ export async function createServer(container: AwilixContainer<AppContainer>) {
   app.withTypeProvider<TypeBoxTypeProvider>();
   app.setValidatorCompiler(TypeBoxValidatorCompiler);
 
-  await app.register(fastifyStatic, {
-    root: path.join(process.cwd(), "dist/public"),
-    prefix: "/public/", // optional: default '/'
-  });
 
-  app.get("/public", async (request, reply) => {
-    const html = `
-    <!DOCTYPE html>
-    <html lang="en">
-    
-    <head>
-        <meta charset="UTF-8">
-        <title>Vite App</title>
-      <script type="module" crossorigin src="/public/assets/index-ec3d6d23.js"></script>
-    </head>
-    
-    <body>
-    <div id="root">
-      ${renderedHTML}
-        </div>
-    </body>
-    
-    </html>
-    `;
+
+  app.get("/", async (request, reply) => {
+    const html = fs
+      .readFileSync(path.join(process.cwd(), "dist/public/index.html"), "utf-8")
+      .replace("[[SSR]]", renderedHTML);
 
     await reply.type("text/html").send(html);
+  });
+
+  await app.register(fastifyStatic, {
+    root: path.join(process.cwd(), "dist/public"),
+    prefix: "/", // optional: default '/'
   });
 
   // Attaching Routes

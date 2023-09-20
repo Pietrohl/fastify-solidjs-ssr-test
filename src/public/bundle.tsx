@@ -7,4 +7,4 @@ const props = {
   };
   
 
-hydrateRoot(document.getElementById('root'), <App {...props} />);
+hydrateRoot(document.getElementById('app'), <App {...props} />);
