@@ -1,20 +1,26 @@
-import { useState } from "react";
-import React from "react";
+import { createSignal } from "solid-js";
 
-export default function App(props: { name: string }) {
+interface AppProps {
+  name: string;
+}
+
+const App = (props: AppProps) => {
   return (
     <>
       <h1>Hello, {props.name}</h1>
       <Counter />
     </>
   );
-}
+};
 
-function Counter() {
-  const [count, setCount] = useState(0);
+const Counter = () => {
+  const [count, setCount] = createSignal(0);
+
   return (
-    <button onClick={() => setCount(count + 1)}>
-      You clicked me {count} times
+    <button onClick={() => setCount(count() + 1)}>
+      You clicked me {count()} times
     </button>
   );
-}
+};
+
+export default App;

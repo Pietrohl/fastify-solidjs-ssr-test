@@ -2,7 +2,8 @@
   "compilerOptions": {
     "target": "es6",
     "module": "es2020",
-    "jsx": "react",
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
     "typeRoots": [
       "./node_modules/@types"
     ],

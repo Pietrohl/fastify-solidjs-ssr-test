@@ -1,9 +1,15 @@
-import React from "react";
-import { renderToString } from "react-dom/server";
+import { renderToString } from "solid-js/web";
 import App from "./App";
 
-const props = {
+// Define your props type
+interface Props {
+  id: string;
+  name: string;
+}
+
+const props: Props = {
+  id: "root",
   name: "John",
 };
 
-export const renderedHTML = renderToString(<App id='root' {...props} />);
+export const renderedHTML = renderToString(() => <App {...props} />);

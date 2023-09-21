@@ -1,10 +1,8 @@
-import React from "react";
-import { hydrateRoot } from 'react-dom/client';
+import { hydrate } from "solid-js/web";
 import App from "../view/App";
 
 const props = {
-    name: "Jane",
-  };
-  
+  name: "Jane",
+};
 
-hydrateRoot(document.getElementById('app'), <App {...props} />);
+hydrate(() => <App {...props} />, document.getElementById('app'));
