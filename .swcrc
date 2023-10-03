@@ -2,18 +2,19 @@
     "jsc": {
         "parser": {
             "syntax": "typescript",
-            "tsx": true,
+            "tsx": false,
             "decorators": true,
             "dynamicImport": true
         },
-        "target": "esnext",
+        "target": "es2015",
         "baseUrl": "./"
     },
     "module": {
-        "type": "umd"
+        "type": "commonjs",
+        "ignoreDynamic": true
     },
     "exclude": [
-        "src/public",
+        "src/client",
         "node_modules",
         ".*\\.spec.ts$",
         ".*\\.test.ts$"

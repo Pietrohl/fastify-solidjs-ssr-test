@@ -1,10 +1,10 @@
 import { createSignal } from "solid-js";
 
-interface AppProps {
+export type AppProps = {
   name: string;
-}
+};
 
-const App = (props: AppProps) => {
+const App = (props: AppProps = { name: "Joe" }) => {
   return (
     <>
       <h1>Hello, {props.name}</h1>
@@ -15,7 +15,6 @@ const App = (props: AppProps) => {
 
 const Counter = () => {
   const [count, setCount] = createSignal(0);
-
   return (
     <button onClick={() => setCount(count() + 1)}>
       You clicked me {count()} times

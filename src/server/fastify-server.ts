@@ -14,11 +14,12 @@ import {
   TypeBoxValidatorCompiler,
   type TypeBoxTypeProvider,
 } from "@fastify/type-provider-typebox";
-
-import path from "path";
+import fs from "node:fs";
 import fastifyStatic from "@fastify/static";
-import { renderedHTML } from "../view/serverRenderer";
-import fs from "fs";
+import path from "node:path";
+import type { HTMLRenderer } from "../client/server-entry.tsx";
+import { generateHydrationScript } from "solid-js/web";
+import type { AppProps } from "../client/components/App";
 
 async function attachRoutes(
   app: FastifyInstance,
@@ -36,26 +37,17 @@ export async function createServer(container: AwilixContainer<AppContainer>) {
     logger: pinoConfig,
   });
 
-  // Middleware
-  await app.register(helmet);
-  await app.register(cors);
-  await app.register(swagger, createOpenapiConfig());
-
   app.withTypeProvider<TypeBoxTypeProvider>();
   app.setValidatorCompiler(TypeBoxValidatorCompiler);
 
+  // Middleware
+  // await app.register(helmet);
+  // await app.register(cors);
+  await app.register(swagger, createOpenapiConfig());
 
-
-  app.get("/", async (request, reply) => {
-    const html = fs
-      .readFileSync(path.join(process.cwd(), "dist/public/index.html"), "utf-8")
-      .replace("[[SSR]]", renderedHTML);
-
-    await reply.type("text/html").send(html);
-  });
-
+  // Static files Route
   await app.register(fastifyStatic, {
-    root: path.join(process.cwd(), "dist/public"),
+    root: path.join(process.cwd(), "public"),
     prefix: "/", // optional: default '/'
   });
 
@@ -63,12 +55,23 @@ export async function createServer(container: AwilixContainer<AppContainer>) {
   await attachRoutes(app, container);
   await app.register(swaggerUi);
 
-  return app.then((app) => {
-    return {
-      ...app,
-      listen: (port: number, host: string, callback: () => void) => {
-        app.listen({ port, host }, callback);
-      },
+  // Adding SSR  catch-all route
+  app.get("/", async (request, reply) => {
+    const serverEntryPath = "../../dist/client/server-entry.mjs";
+    const { default: renderedHTML } = (await import(serverEntryPath)) as {
+      default: HTMLRenderer<AppProps>;
     };
+
+    const html = fs
+      .readFileSync(path.join(process.cwd(), "public/index.html"), "utf-8")
+      .replace("<!--#include HydrationScript -->", generateHydrationScript())
+      .replace(
+        "<!--#include App -->",
+        await renderedHTML(request, { name: "John" })
+      );
+
+    await reply.type("text/html").send(html);
   });
+
+  return app;
 }
